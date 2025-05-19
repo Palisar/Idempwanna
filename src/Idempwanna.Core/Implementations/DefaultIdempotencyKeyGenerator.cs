@@ -99,4 +99,22 @@ public class DefaultIdempotencyKeyGenerator : IIdempotencyKeyGenerator
             $"No idempotency key found in the request. Please provide a '{headerName}' header, " +
             $"query parameter, or a request body.");
     }
+
+    /// <inheritdoc />
+    public string GetKeyFromParameter(object parameterValue)
+    {
+        if (parameterValue == null)
+        {
+            throw new ArgumentNullException(nameof(parameterValue));
+        }
+        
+        // If the parameter is a string or primitive type, use it directly
+        if (parameterValue is string || parameterValue.GetType().IsPrimitive || parameterValue is Guid)
+        {
+            return parameterValue.ToString()!;
+        }
+        
+        // Otherwise, generate a key based on the object
+        return GenerateKey(parameterValue);
+    }
 }

@@ -14,6 +14,7 @@ Idempotency is the property of certain operations whereby they can be applied mu
   - Custom cache implementations
 - Attribute-based approach for marking ASP.NET Core endpoints as idempotent
 - Configurable idempotency key handling (header, query parameter, or custom)
+- Parameter-based idempotency keys using `[IdempotentKey]` attribute
 - Support for both synchronous and asynchronous operations
 - Thread-safe implementation
 
@@ -119,6 +120,29 @@ public class PaymentsController : ControllerBase
     }
 }
 ```
+
+### 4. Using Parameter-Based Idempotency Keys
+
+You can mark specific parameters to be used as idempotency keys using the `[IdempotentKey]` attribute:
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class OrdersController : ControllerBase
+{
+    [HttpPost("{requestId}")]
+    [Idempotent] 
+    public async Task<ActionResult<OrderResponse>> CreateOrder(
+        [IdempotentKey] Guid requestId,
+        OrderRequest request)
+    {
+        // The requestId parameter will be used as the idempotency key
+        // No need to extract it from headers or generate it from the request body
+        return Ok(new OrderResponse { /* ... */ });
+    }
+}
+
+This is particularly useful for operations where you want to use a client-generated ID as the idempotency key, such as in distributed systems or event-driven architectures.
 
 ## License
 

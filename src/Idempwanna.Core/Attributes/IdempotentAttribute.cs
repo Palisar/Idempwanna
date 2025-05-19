@@ -1,9 +1,12 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using Idempwanna.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Logging;
 
 namespace Idempwanna.Core.Attributes;
@@ -26,9 +29,7 @@ public class IdempotentAttribute : Attribute, IAsyncActionFilter
     {
         _headerName = headerName;
         _requiresKey = requiresKey;
-    }
-
-    /// <summary>
+    }    /// <summary>
     /// Called asynchronously before the action, after model binding is complete.
     /// </summary>
     /// <param name="context">The <see cref="ActionExecutingContext"/>.</param>
@@ -42,23 +43,47 @@ public class IdempotentAttribute : Attribute, IAsyncActionFilter
 
         string? idempotencyKey = null;
 
-        try
+        // First, check if any parameter is marked with IdempotentKeyAttribute
+        if (context.ActionDescriptor is ControllerActionDescriptor actionDescriptor)
         {
-            idempotencyKey = await keyGenerator.ExtractFromHttpRequestAsync(context.HttpContext.Request, _headerName);
-        }
-        catch (InvalidOperationException ex)
-        {
-            if (_requiresKey)
+            var parameterInfos = actionDescriptor.MethodInfo.GetParameters();
+            for (var i = 0; i < parameterInfos.Length; i++)
             {
-                logger.LogWarning(ex, "Failed to extract idempotency key from request");
-                context.Result = new BadRequestObjectResult($"Missing idempotency key. Please provide a '{_headerName}' header.");
+                var parameter = parameterInfos[i];
+                if (parameter.GetCustomAttribute<IdempotentKeyAttribute>() != null)
+                {
+                    if (context.ActionArguments.TryGetValue(parameter.Name!, out var parameterValue) && parameterValue != null)
+                    {
+                        idempotencyKey = keyGenerator.GetKeyFromParameter(parameterValue);
+                        logger.LogInformation("Using parameter '{ParameterName}' with value '{ParameterValue}' as idempotency key", 
+                            parameter.Name, parameterValue);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // If no parameter with IdempotentKeyAttribute found, try to extract from request
+        if (idempotencyKey == null)
+        {
+            try
+            {
+                idempotencyKey = await keyGenerator.ExtractFromHttpRequestAsync(context.HttpContext.Request, _headerName);
+            }
+            catch (InvalidOperationException ex)
+            {
+                if (_requiresKey)
+                {
+                    logger.LogWarning(ex, "Failed to extract idempotency key from request");
+                    context.Result = new BadRequestObjectResult($"Missing idempotency key. Please provide a '{_headerName}' header.");
+                    return;
+                }
+
+                // If key is not required, proceed with the action
+                logger.LogInformation("No idempotency key found, but it's not required. Proceeding with action execution.");
+                await next();
                 return;
             }
-            
-            // If key is not required, proceed with the action
-            logger.LogInformation("No idempotency key found, but it's not required. Proceeding with action execution.");
-            await next();
-            return;
         }
 
         try

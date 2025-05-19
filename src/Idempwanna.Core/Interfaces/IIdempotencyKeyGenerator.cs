@@ -22,4 +22,11 @@ public interface IIdempotencyKeyGenerator
     /// <param name="headerName">Optional header name to look for the key</param>
     /// <returns>The extracted idempotency key</returns>
     Task<string> ExtractFromHttpRequestAsync(HttpRequest httpRequest, string headerName = "x-Idempotency-Key");
+    
+    /// <summary>
+    /// Gets an idempotency key from a parameter value marked with the IdempotentKeyAttribute
+    /// </summary>
+    /// <param name="parameterValue">The value of the parameter marked with IdempotentKeyAttribute</param>
+    /// <returns>The idempotency key derived from the parameter value</returns>
+    string GetKeyFromParameter(object parameterValue);
 }

@@ -105,4 +105,45 @@ public class IdempotencyKeyGeneratorTests
         // Assert
         key.Should().Be(expectedKey);
     }
+
+    [Fact]
+    public void GetKeyFromParameter_ShouldReturnParameterToString_WhenPrimitiveOrGuid()
+    {
+        // Arrange
+        var guidValue = Guid.NewGuid();
+        var intValue = 42;
+        var stringValue = "test-key-123";
+
+        // Act
+        var guidKey = _keyGenerator.GetKeyFromParameter(guidValue);
+        var intKey = _keyGenerator.GetKeyFromParameter(intValue);
+        var stringKey = _keyGenerator.GetKeyFromParameter(stringValue);
+
+        // Assert
+        guidKey.Should().Be(guidValue.ToString());
+        intKey.Should().Be(intValue.ToString());
+        stringKey.Should().Be(stringValue);
+    }
+
+    [Fact]
+    public void GetKeyFromParameter_ShouldGenerateHashBasedKey_WhenComplexObject()
+    {
+        // Arrange
+        var complexObject = new { Id = 123, Name = "Test" };
+        var expectedKey = _keyGenerator.GenerateKey(complexObject);
+
+        // Act
+        var key = _keyGenerator.GetKeyFromParameter(complexObject);
+
+        // Assert
+        key.Should().Be(expectedKey);
+    }
+
+    [Fact]
+    public void GetKeyFromParameter_ShouldThrowArgumentNullException_WhenParameterIsNull()
+    {
+        // Act & Assert
+        Action act = () => _keyGenerator.GetKeyFromParameter(null!);
+        act.Should().Throw<ArgumentNullException>();
+    }
 }

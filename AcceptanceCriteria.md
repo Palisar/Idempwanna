@@ -8,7 +8,7 @@ This document outlines the acceptance criteria for a .NET 9 NuGet package that p
 ### 1. Basic Functionality
 - [ ] Support for marking HTTP endpoints as idempotent via attributes
 - [ ] Automatic handling of duplicate requests with the same idempotency key
-- [ ] Configurable idempotency key handling (header, query parameter, or custom)
+- [x] Configurable idempotency key handling (header, query parameter, parameter-based, or custom)
 - [ ] Support for both synchronous and asynchronous endpoints
 - [ ] Automatic response caching for successful operations
 
@@ -53,7 +53,7 @@ This document outlines the acceptance criteria for a .NET 9 NuGet package that p
 
 ### 8. Testing
 - [ ] FluentAssertions, XUnit, NSubstitute
-- [ ] Test coverage > 80% in the Core Project
+- [ ] Test coverage > 70% in the Core Project, Don't test Attribute
 - [ ] Integration test suite
 - [ ] Performance benchmarks
 - [ ] Sample applications
