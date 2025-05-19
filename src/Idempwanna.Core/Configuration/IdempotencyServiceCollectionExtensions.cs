@@ -15,8 +15,8 @@ public static class IdempotencyServiceCollectionExtensions
     /// Adds idempotency services to the specified <see cref="IServiceCollection" />.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
-    /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
-    public static IServiceCollection AddIdempotency(this IServiceCollection services)
+    /// <returns>An <see cref="IdempotencyBuilder"/> that can be used to configure idempotency services.</returns>
+    public static IdempotencyBuilder AddIdempotency(this IServiceCollection services)
     {
         if (services == null)
         {
@@ -28,66 +28,131 @@ public static class IdempotencyServiceCollectionExtensions
         services.TryAddSingleton<IIdempotencyCache, InMemoryIdempotencyCache>();
         services.TryAddScoped<IIdempotencyService, DefaultIdempotencyService>();
 
-        return services;
+        return new IdempotencyBuilder(services);
+    }
+}
+
+/// <summary>
+/// A builder for configuring idempotency services.
+/// </summary>
+public class IdempotencyBuilder
+{
+    private readonly IServiceCollection _services;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IdempotencyBuilder"/> class.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to configure.</param>
+    public IdempotencyBuilder(IServiceCollection services)
+    {
+        _services = services ?? throw new ArgumentNullException(nameof(services));
     }
 
     /// <summary>
-    /// Adds idempotency services with in-memory caching to the specified <see cref="IServiceCollection" />.
+    /// Configures the idempotency services to use in-memory caching.
     /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
     /// <param name="configureOptions">A delegate to configure the <see cref="IdempotencyOptions"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
-    public static IServiceCollection AddIdempotencyWithInMemoryCache(
-        this IServiceCollection services,
-        Action<IdempotencyOptions>? configureOptions = null)
+    /// <returns>The <see cref="IdempotencyBuilder"/> so that additional calls can be chained.</returns>
+    public IdempotencyBuilder WithInMemoryCache(Action<IdempotencyOptions>? configureOptions = null)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
         // Configure options if provided
         if (configureOptions != null)
         {
-            services.Configure(configureOptions);
+            _services.Configure(configureOptions);
         }
 
-        // Register the default implementations
-        services.TryAddSingleton<IIdempotencyKeyGenerator, DefaultIdempotencyKeyGenerator>();
-        services.TryAddSingleton<IIdempotencyCache, InMemoryIdempotencyCache>();
-        services.TryAddScoped<IIdempotencyService, DefaultIdempotencyService>();
+        // Register the in-memory cache implementation
+        _services.RemoveAll<IIdempotencyCache>();
+        _services.TryAddSingleton<IIdempotencyCache, InMemoryIdempotencyCache>();
 
-        return services;
+        return this;
     }
 
     /// <summary>
-    /// Adds idempotency services with a custom cache implementation to the specified <see cref="IServiceCollection" />.
+    /// Configures the idempotency services to use a custom cache implementation.
     /// </summary>
     /// <typeparam name="TCache">The type of the cache implementation.</typeparam>
-    /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
     /// <param name="configureOptions">A delegate to configure the <see cref="IdempotencyOptions"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
-    public static IServiceCollection AddIdempotencyWithCustomCache<TCache>(
-        this IServiceCollection services,
-        Action<IdempotencyOptions>? configureOptions = null)
+    /// <returns>The <see cref="IdempotencyBuilder"/> so that additional calls can be chained.</returns>
+    public IdempotencyBuilder WithCustomCache<TCache>(Action<IdempotencyOptions>? configureOptions = null)
         where TCache : class, IIdempotencyCache
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
         // Configure options if provided
         if (configureOptions != null)
         {
-            services.Configure(configureOptions);
+            _services.Configure(configureOptions);
         }
 
         // Register with custom cache implementation
-        services.TryAddSingleton<IIdempotencyKeyGenerator, DefaultIdempotencyKeyGenerator>();
-        services.TryAddSingleton<IIdempotencyCache, TCache>();
-        services.TryAddScoped<IIdempotencyService, DefaultIdempotencyService>();
+        _services.RemoveAll<IIdempotencyCache>();
+        _services.TryAddSingleton<IIdempotencyCache, TCache>();
 
-        return services;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the idempotency services to use a redis cache implementation.
+    /// </summary>
+    /// <param name="connectionString">The Redis connection string.</param>
+    /// <param name="configureOptions">A delegate to configure the <see cref="IdempotencyOptions"/>.</param>
+    /// <returns>The <see cref="IdempotencyBuilder"/> so that additional calls can be chained.</returns>
+    public IdempotencyBuilder WithRedisCache(string connectionString, Action<IdempotencyOptions>? configureOptions = null)
+    {
+        // Configure options if provided
+        if (configureOptions != null)
+        {
+            _services.Configure(configureOptions);
+        }
+
+        // Register the Redis cache implementation
+        _services.RemoveAll<IIdempotencyCache>();
+        _services.TryAddSingleton<IIdempotencyCache>(new RedisIdempotencyCache(connectionString));
+
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the idempotency key generator.
+    /// </summary>
+    /// <typeparam name="TGenerator">The type of the key generator implementation.</typeparam>
+    /// <returns>The <see cref="IdempotencyBuilder"/> so that additional calls can be chained.</returns>
+    public IdempotencyBuilder WithKeyGenerator<TGenerator>()
+        where TGenerator : class, IIdempotencyKeyGenerator
+    {
+        _services.RemoveAll<IIdempotencyKeyGenerator>();
+        _services.TryAddSingleton<IIdempotencyKeyGenerator, TGenerator>();
+
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the idempotency service implementation.
+    /// </summary>
+    /// <typeparam name="TService">The type of the service implementation.</typeparam>
+    /// <returns>The <see cref="IdempotencyBuilder"/> so that additional calls can be chained.</returns>
+    public IdempotencyBuilder WithService<TService>()
+        where TService : class, IIdempotencyService
+    {
+        _services.RemoveAll<IIdempotencyService>();
+        _services.TryAddScoped<IIdempotencyService, TService>();
+
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the idempotency options.
+    /// </summary>
+    /// <param name="configureOptions">A delegate to configure the <see cref="IdempotencyOptions"/>.</param>
+    /// <returns>The <see cref="IdempotencyBuilder"/> so that additional calls can be chained.</returns>
+    public IdempotencyBuilder Configure(Action<IdempotencyOptions> configureOptions)
+    {
+        if (configureOptions == null)
+        {
+            throw new ArgumentNullException(nameof(configureOptions));
+        }
+
+        _services.Configure(configureOptions);
+
+        return this;
     }
 }

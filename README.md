@@ -31,18 +31,32 @@ Register the idempotency services in your `Program.cs` or `Startup.cs`:
 
 ```csharp
 // Using in-memory cache (simplest approach)
-builder.Services.AddIdempotencyWithInMemoryCache();
+builder.Services.AddIdempotency()
+    .WithInMemoryCache();
 
 // Or with custom options
-builder.Services.AddIdempotencyWithInMemoryCache(options =>
-{
-    options.DefaultCacheExpiration = TimeSpan.FromHours(1);
-    options.DefaultHeaderName = "x-Idempotency-Key";
-    options.ThrowOnMissingKey = true;
-});
+builder.Services.AddIdempotency()
+    .WithInMemoryCache(options =>
+    {
+        options.DefaultCacheExpiration = TimeSpan.FromHours(1);
+        options.DefaultHeaderName = "x-Idempotency-Key";
+        options.ThrowOnMissingKey = true;
+    });
 
 // Or with a custom cache implementation
-builder.Services.AddIdempotencyWithCustomCache<YourCustomCacheImplementation>();
+builder.Services.AddIdempotency()
+    .WithCustomCache<YourCustomCacheImplementation>();
+    
+// Advanced configuration using method chaining
+builder.Services.AddIdempotency()
+    .WithCustomCache<RedisIdempotencyCache>()
+    .WithKeyGenerator<CustomKeyGenerator>()
+    .WithService<CustomIdempotencyService>()
+    .Configure(options =>
+    {
+        options.AllowBodyBasedKeys = true;
+        options.AllowQueryParameterKeys = true;
+    });
 ```
 
 ### 2. Mark Endpoints as Idempotent

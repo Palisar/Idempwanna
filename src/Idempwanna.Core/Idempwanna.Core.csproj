@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>    <Nullable>enable</Nullable>
       <!-- NuGet Package Metadata -->
     <PackageId>Idempwanna</PackageId>
-    <Version>1.0.0-alpha2</Version>
+    <Version>1.0.0-alpha3</Version>
     <Authors>Your Name</Authors>
     <Company>Your Company</Company>
     <Product>Idempwanna</Product>
