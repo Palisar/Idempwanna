@@ -53,7 +53,7 @@ This document outlines the acceptance criteria for a .NET 9 NuGet package that p
 
 ### 8. Testing
 - [ ] FluentAssertions, XUnit, NSubstitute
-- [ ] Test coverage > 70%
+- [ ] Test coverage > 80% in the Core Project
 - [ ] Integration test suite
 - [ ] Performance benchmarks
 - [ ] Sample applications
