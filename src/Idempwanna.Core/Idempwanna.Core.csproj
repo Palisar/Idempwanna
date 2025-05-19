@@ -1,13 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    
-    <!-- NuGet Package Metadata -->
+      <!-- NuGet Package Metadata -->
     <PackageId>Idempwanna</PackageId>
-    <Version>1.0.0-alpha1</Version>
+    <Version>1.0.0-alpha2</Version>
     <Authors>Your Name</Authors>
     <Company>Your Company</Company>
     <Product>Idempwanna</Product>
@@ -34,6 +32,10 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.8.37" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>
