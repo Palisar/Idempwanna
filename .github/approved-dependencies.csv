@@ -1,0 +1,17 @@
+# Approved Dependencies for Idempwanna
+# Format: package_name,minimum_version,maximum_version,justification
+
+# Core Dependencies
+Microsoft.AspNetCore.Http.Abstractions,2.2.0,,Required for HTTP abstractions
+Microsoft.AspNetCore.Mvc.Core,2.2.5,,Required for ASP.NET MVC support
+Microsoft.Extensions.Logging.Abstractions,8.0.0,,Required for logging support
+Microsoft.Extensions.Options,8.0.0,,Required for options pattern support
+StackExchange.Redis,2.8.37,,Required for Redis cache implementation
+
+# Test Dependencies
+NSubstitute,5.0.0,,Used for mocking in unit tests
+xunit,2.4.2,,Testing framework
+coverlet.collector,6.0.0,,Code coverage tool
+
+# Do not add new dependencies without explicit approval
+# Pull requests with unauthorized dependencies will be rejected
