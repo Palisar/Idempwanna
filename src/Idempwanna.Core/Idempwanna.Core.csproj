@@ -2,11 +2,11 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>    <Nullable>enable</Nullable>
-    <!-- NuGet Package Metadata -->
-    <PackageId>Idempwanna</PackageId>
-    <Version>1.0.0-beta7</Version>
+    <!-- NuGet Package Metadata -->    <PackageId>Idempwanna</PackageId>
+    <Version>1.0.0</Version>
     <Authors>Paul Keating</Authors>
     <Company>PAL-CODE</Company>
+    <Email>idempwanna@hotmail.com</Email>
     <Product>Idempwanna</Product>
     <Description>An abstract idempotency feature for ASP.NET projects that can be used with different types of caching offerings.</Description>
     <PackageTags>idempotency;asp.net;caching;api</PackageTags>
