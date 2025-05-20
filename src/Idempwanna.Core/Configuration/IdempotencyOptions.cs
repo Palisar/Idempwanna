@@ -15,7 +15,7 @@ public class IdempotencyOptions
     /// <summary>
     /// Gets or sets the default header name for idempotency keys
     /// </summary>
-    public string DefaultHeaderName { get; set; } = "x-Idempotency-Key";
+    public string DefaultHeaderName { get; set; } = "x-idempotency-key";
 
     /// <summary>
     /// Gets or sets whether to throw an exception when no idempotency key is found

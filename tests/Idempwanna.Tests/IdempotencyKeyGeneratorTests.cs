@@ -44,7 +44,7 @@ public class IdempotencyKeyGeneratorTests
         // Arrange
         var expectedKey = "test-key-123";
         var httpContext = new DefaultHttpContext();
-        httpContext.Request.Headers["x-Idempotency-Key"] = expectedKey;
+        httpContext.Request.Headers["x-idempotency-key"] = expectedKey;
 
         // Act
         var key = await _keyGenerator.ExtractFromHttpRequestAsync(httpContext.Request);
@@ -75,7 +75,7 @@ public class IdempotencyKeyGeneratorTests
         // Arrange
         var expectedKey = "test-key-123";
         var httpContext = new DefaultHttpContext();
-        httpContext.Request.QueryString = new QueryString($"?x-Idempotency-Key={expectedKey}");
+        httpContext.Request.QueryString = new QueryString($"?x-idempotency-key={expectedKey}");
 
         // Act
         var key = await _keyGenerator.ExtractFromHttpRequestAsync(httpContext.Request);
@@ -104,5 +104,46 @@ public class IdempotencyKeyGeneratorTests
 
         // Assert
         key.Should().Be(expectedKey);
+    }
+
+    [Fact]
+    public void GetKeyFromParameter_ShouldReturnParameterToString_WhenPrimitiveOrGuid()
+    {
+        // Arrange
+        var guidValue = Guid.NewGuid();
+        var intValue = 42;
+        var stringValue = "test-key-123";
+
+        // Act
+        var guidKey = _keyGenerator.GetKeyFromParameter(guidValue);
+        var intKey = _keyGenerator.GetKeyFromParameter(intValue);
+        var stringKey = _keyGenerator.GetKeyFromParameter(stringValue);
+
+        // Assert
+        guidKey.Should().Be(guidValue.ToString());
+        intKey.Should().Be(intValue.ToString());
+        stringKey.Should().Be(stringValue);
+    }
+
+    [Fact]
+    public void GetKeyFromParameter_ShouldGenerateHashBasedKey_WhenComplexObject()
+    {
+        // Arrange
+        var complexObject = new { Id = 123, Name = "Test" };
+        var expectedKey = _keyGenerator.GenerateKey(complexObject);
+
+        // Act
+        var key = _keyGenerator.GetKeyFromParameter(complexObject);
+
+        // Assert
+        key.Should().Be(expectedKey);
+    }
+
+    [Fact]
+    public void GetKeyFromParameter_ShouldThrowArgumentNullException_WhenParameterIsNull()
+    {
+        // Act & Assert
+        Action act = () => _keyGenerator.GetKeyFromParameter(null!);
+        act.Should().Throw<ArgumentNullException>();
     }
 }

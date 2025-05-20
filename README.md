@@ -1,6 +1,6 @@
 # Idempwanna
 
-Idempwanna is a simple idempotency abstraction for ASP.NET projects that can be used with different types of caching offerings in .NET Core.
+Idempwanna is an abstract idempotency feature for ASP.NET projects that can be used with different types of caching offerings in the .NET Core framework.
 
 ## What is Idempotency?
 
@@ -14,6 +14,7 @@ Idempotency is the property of certain operations whereby they can be applied mu
   - Custom cache implementations
 - Attribute-based approach for marking ASP.NET Core endpoints as idempotent
 - Configurable idempotency key handling (header, query parameter, or custom)
+- Parameter-based idempotency keys using `[IdempotentKey]` attribute
 - Support for both synchronous and asynchronous operations
 - Thread-safe implementation
 
@@ -27,40 +28,32 @@ dotnet add package Idempwanna
 
 ### 1. Register Services
 
-Register the idempotency services in your `Program.cs` or `Startup.cs` using the fluent builder pattern:
+Register the idempotency services in your `Program.cs` or `Startup.cs`:
 
 ```csharp
-// Basic setup with default implementations
-builder.Services.AddIdempotency();
+// Using in-memory cache (simplest approach)
+builder.Services.AddIdempotency()
+    .WithInMemoryCache();
 
-// Configure with in-memory cache
+// Or with custom options
 builder.Services.AddIdempotency()
     .WithInMemoryCache(options =>
     {
         options.DefaultCacheExpiration = TimeSpan.FromHours(1);
-        options.DefaultHeaderName = "x-Idempotency-Key";
+        options.DefaultHeaderName = "x-idempotency-key";
         options.ThrowOnMissingKey = true;
     });
 
-// Configure with custom cache implementation
+// Or with a custom cache implementation
 builder.Services.AddIdempotency()
-    .WithCustomCache<YourCustomCacheImplementation>()
-    .Configure(options => 
-    {
-        options.DefaultCacheExpiration = TimeSpan.FromHours(2);
-    });
-
-// Configure with custom key generator
-builder.Services.AddIdempotency()
-    .WithCustomKeyGenerator<CustomIdempotencyKeyGenerator>()
-    .WithInMemoryCache();
-
-// Full customization example
+    .WithCustomCache<YourCustomCacheImplementation>();
+    
+// Advanced configuration using method chaining
 builder.Services.AddIdempotency()
     .WithCustomCache<RedisIdempotencyCache>()
-    .WithCustomKeyGenerator<CustomIdempotencyKeyGenerator>()
-    .WithCustomService<CustomIdempotencyService>()
-    .Configure(options => 
+    .WithKeyGenerator<CustomKeyGenerator>()
+    .WithService<CustomIdempotencyService>()
+    .Configure(options =>
     {
         options.AllowBodyBasedKeys = true;
         options.AllowQueryParameterKeys = true;
@@ -127,36 +120,31 @@ public class PaymentsController : ControllerBase
     }
 }
 ```
-### 4. Custom Cache Implementation
-If you want to implement your own caching mechanism, create a class that implements `IIdempotencyCache` and register it using the fluent builder:
+
+### 4. Using Parameter-Based Idempotency Keys
+
+You can mark specific parameters to be used as idempotency keys using the `[IdempotentKey]` attribute:
 
 ```csharp
-public class YourCustomCacheImplementation : IIdempotencyCache
+[ApiController]
+[Route("api/[controller]")]
+public class OrdersController : ControllerBase
 {
-    // Implement the required methods for your custom cache
-}
-
-builder.Services.AddIdempotency()
-    .WithCustomCache<YourCustomCacheImplementation>();
-```
-
-### 5. Custom Idempotency Key Generation
-If you want to customize how the idempotency key is generated, implement `IIdempotencyKeyGenerator` and register it using the fluent builder:
-
-```csharp
-public class CustomIdempotencyKeyGenerator : IIdempotencyKeyGenerator
-{
-    public string GenerateKey(object request)
+    [HttpPost("{requestId}")]
+    [Idempotent] 
+    public async Task<ActionResult<OrderResponse>> CreateOrder(
+        [IdempotentKey] Guid requestId,
+        OrderRequest request)
     {
-        // Implement your custom key generation logic
+        // The requestId parameter will be used as the idempotency key
+        // No need to extract it from headers or generate it from the request body
+        return Ok(new OrderResponse { /* ... */ });
     }
-    
-    // Implement other interface methods
 }
 
-builder.Services.AddIdempotency()
-    .WithCustomKeyGenerator<CustomIdempotencyKeyGenerator>();
-```
+This is particularly useful for operations where you want to use a client-generated ID as the idempotency key, such as in distributed systems or event-driven architectures.
 
+```
 ## License
+
 This project is licensed under the MIT License - see the LICENSE file for details.

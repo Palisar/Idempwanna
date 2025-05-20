@@ -1,14 +1,14 @@
 # Idempotency Package - Acceptance Criteria
 
 ## Overview
-This document outlines the acceptance criteria for a .NET 9 NuGet package that provides idempotency support for ASP.NET applications. The package will help ensure that operations can be safely retried without unintended side effects.
+This document outlines the acceptance criteria for a .NET 8 & 9 NuGet package that provides idempotency support for ASP.NET applications. The package will help ensure that operations can be safely retried without unintended side effects.
 
 ## Core Requirements
 
 ### 1. Basic Functionality
 - [ ] Support for marking HTTP endpoints as idempotent via attributes
 - [ ] Automatic handling of duplicate requests with the same idempotency key
-- [ ] Configurable idempotency key handling (header, query parameter, or custom)
+- [x] Configurable idempotency key handling (header, query parameter, parameter-based, or custom)
 - [ ] Support for both synchronous and asynchronous endpoints
 - [ ] Automatic response caching for successful operations
 
@@ -16,7 +16,7 @@ This document outlines the acceptance criteria for a .NET 9 NuGet package that p
 - [ ] Extensible caching system with multiple provider support
 - [ ] Built-in support for:
   - [ ] In-memory caching
-  - [ ] Distributed caching (Redis, SQL Server, etc.)  
+  - [ ] Distributed caching (Redis, SQL Server, etc.)
   - [ ] Hybrid caching
 - [ ] Configurable cache duration
 - [ ] Cache key generation strategies
@@ -53,7 +53,7 @@ This document outlines the acceptance criteria for a .NET 9 NuGet package that p
 
 ### 8. Testing
 - [ ] FluentAssertions, XUnit, NSubstitute
-- [ ] Test coverage > 70%
+- [ ] Test coverage > 70% in the Core Project, Don't test Attribute
 - [ ] Integration test suite
 - [ ] Performance benchmarks
 - [ ] Sample applications

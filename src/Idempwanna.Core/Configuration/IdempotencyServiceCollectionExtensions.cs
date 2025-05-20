@@ -91,11 +91,32 @@ public class IdempotencyBuilder
     }
 
     /// <summary>
+    /// Configures the idempotency services to use a redis cache implementation.
+    /// </summary>
+    /// <param name="connectionString">The Redis connection string.</param>
+    /// <param name="configureOptions">A delegate to configure the <see cref="IdempotencyOptions"/>.</param>
+    /// <returns>The <see cref="IdempotencyBuilder"/> so that additional calls can be chained.</returns>
+    public IdempotencyBuilder WithRedisCache(string connectionString, Action<IdempotencyOptions>? configureOptions = null)
+    {
+        // Configure options if provided
+        if (configureOptions != null)
+        {
+            _services.Configure(configureOptions);
+        }
+
+        // Register the Redis cache implementation
+        _services.RemoveAll<IIdempotencyCache>();
+        _services.TryAddSingleton<IIdempotencyCache>(new RedisIdempotencyCache(connectionString));
+
+        return this;
+    }
+
+    /// <summary>
     /// Configures the idempotency key generator.
     /// </summary>
     /// <typeparam name="TGenerator">The type of the key generator implementation.</typeparam>
     /// <returns>The <see cref="IdempotencyBuilder"/> so that additional calls can be chained.</returns>
-    public IdempotencyBuilder WithCustomKeyGenerator<TGenerator>()
+    public IdempotencyBuilder WithKeyGenerator<TGenerator>()
         where TGenerator : class, IIdempotencyKeyGenerator
     {
         _services.RemoveAll<IIdempotencyKeyGenerator>();
@@ -109,7 +130,7 @@ public class IdempotencyBuilder
     /// </summary>
     /// <typeparam name="TService">The type of the service implementation.</typeparam>
     /// <returns>The <see cref="IdempotencyBuilder"/> so that additional calls can be chained.</returns>
-    public IdempotencyBuilder WithCustomService<TService>()
+    public IdempotencyBuilder WithService<TService>()
         where TService : class, IIdempotencyService
     {
         _services.RemoveAll<IIdempotencyService>();

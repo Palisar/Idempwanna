@@ -40,7 +40,7 @@ public class DefaultIdempotencyKeyGenerator : IIdempotencyKeyGenerator
     }
 
     /// <inheritdoc />
-    public async Task<string> ExtractFromHttpRequestAsync(HttpRequest httpRequest, string headerName = "x-Idempotency-Key")
+    public async Task<string> ExtractFromHttpRequestAsync(HttpRequest httpRequest, string headerName = "x-idempotency-key")
     {
         if (httpRequest == null)
         {
@@ -98,5 +98,23 @@ public class DefaultIdempotencyKeyGenerator : IIdempotencyKeyGenerator
         throw new InvalidOperationException(
             $"No idempotency key found in the request. Please provide a '{headerName}' header, " +
             $"query parameter, or a request body.");
+    }
+
+    /// <inheritdoc />
+    public string GetKeyFromParameter(object parameterValue)
+    {
+        if (parameterValue == null)
+        {
+            throw new ArgumentNullException(nameof(parameterValue));
+        }
+        
+        // If the parameter is a string or primitive type, use it directly
+        if (parameterValue is string || parameterValue.GetType().IsPrimitive || parameterValue is Guid)
+        {
+            return parameterValue.ToString()!;
+        }
+        
+        // Otherwise, generate a key based on the object
+        return GenerateKey(parameterValue);
     }
 }
