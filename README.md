@@ -27,22 +27,44 @@ dotnet add package Idempwanna
 
 ### 1. Register Services
 
-Register the idempotency services in your `Program.cs` or `Startup.cs`:
+Register the idempotency services in your `Program.cs` or `Startup.cs` using the fluent builder pattern:
 
 ```csharp
-// Using in-memory cache (simplest approach)
-builder.Services.AddIdempotencyWithInMemoryCache();
+// Basic setup with default implementations
+builder.Services.AddIdempotency();
 
-// Or with custom options
-builder.Services.AddIdempotencyWithInMemoryCache(options =>
-{
-    options.DefaultCacheExpiration = TimeSpan.FromHours(1);
-    options.DefaultHeaderName = "x-Idempotency-Key";
-    options.ThrowOnMissingKey = true;
-});
+// Configure with in-memory cache
+builder.Services.AddIdempotency()
+    .WithInMemoryCache(options =>
+    {
+        options.DefaultCacheExpiration = TimeSpan.FromHours(1);
+        options.DefaultHeaderName = "x-Idempotency-Key";
+        options.ThrowOnMissingKey = true;
+    });
 
-// Or with a custom cache implementation
-builder.Services.AddIdempotencyWithCustomCache<YourCustomCacheImplementation>();
+// Configure with custom cache implementation
+builder.Services.AddIdempotency()
+    .WithCustomCache<YourCustomCacheImplementation>()
+    .Configure(options => 
+    {
+        options.DefaultCacheExpiration = TimeSpan.FromHours(2);
+    });
+
+// Configure with custom key generator
+builder.Services.AddIdempotency()
+    .WithCustomKeyGenerator<CustomIdempotencyKeyGenerator>()
+    .WithInMemoryCache();
+
+// Full customization example
+builder.Services.AddIdempotency()
+    .WithCustomCache<RedisIdempotencyCache>()
+    .WithCustomKeyGenerator<CustomIdempotencyKeyGenerator>()
+    .WithCustomService<CustomIdempotencyService>()
+    .Configure(options => 
+    {
+        options.AllowBodyBasedKeys = true;
+        options.AllowQueryParameterKeys = true;
+    });
 ```
 
 ### 2. Mark Endpoints as Idempotent
@@ -105,7 +127,36 @@ public class PaymentsController : ControllerBase
     }
 }
 ```
+### 4. Custom Cache Implementation
+If you want to implement your own caching mechanism, create a class that implements `IIdempotencyCache` and register it using the fluent builder:
+
+```csharp
+public class YourCustomCacheImplementation : IIdempotencyCache
+{
+    // Implement the required methods for your custom cache
+}
+
+builder.Services.AddIdempotency()
+    .WithCustomCache<YourCustomCacheImplementation>();
+```
+
+### 5. Custom Idempotency Key Generation
+If you want to customize how the idempotency key is generated, implement `IIdempotencyKeyGenerator` and register it using the fluent builder:
+
+```csharp
+public class CustomIdempotencyKeyGenerator : IIdempotencyKeyGenerator
+{
+    public string GenerateKey(object request)
+    {
+        // Implement your custom key generation logic
+    }
+    
+    // Implement other interface methods
+}
+
+builder.Services.AddIdempotency()
+    .WithCustomKeyGenerator<CustomIdempotencyKeyGenerator>();
+```
 
 ## License
-
 This project is licensed under the MIT License - see the LICENSE file for details.
