@@ -1,9 +1,7 @@
 using FluentAssertions;
 using Idempwanna.Core.Implementations;
 using StackExchange.Redis;
-using System.Text.Json;
 using Testcontainers.Redis;
-using Xunit;
 
 namespace Idempwanna.Tests;
 

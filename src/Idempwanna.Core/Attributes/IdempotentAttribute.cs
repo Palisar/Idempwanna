@@ -1,9 +1,6 @@
-using System;
-using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
 using Idempwanna.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;

@@ -3,10 +3,6 @@ using Idempwanna.Core.Implementations;
 using Idempwanna.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace Idempwanna.Tests;
 

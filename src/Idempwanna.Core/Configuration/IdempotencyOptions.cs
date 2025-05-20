@@ -1,5 +1,3 @@
-using System;
-
 namespace Idempwanna.Core.Configuration;
 
 /// <summary>

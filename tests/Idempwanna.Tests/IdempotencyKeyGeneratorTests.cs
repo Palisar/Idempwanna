@@ -1,12 +1,7 @@
 using FluentAssertions;
 using Idempwanna.Core.Implementations;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
-using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace Idempwanna.Tests;
 
