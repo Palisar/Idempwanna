@@ -1,6 +1,6 @@
 # Idempwanna
 
-Idempwanna is an abstract idempotency feature for ASP.NET projects that can be used with different types of caching offerings in the .NET Core framework.
+Idempwanna is a simple idempotency abstraction for ASP.NET projects that can be used with different types of caching offerings in .NET Core.
 
 ## What is Idempotency?
 
