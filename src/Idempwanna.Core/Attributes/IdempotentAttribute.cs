@@ -25,7 +25,7 @@ public class IdempotentAttribute : Attribute, IAsyncActionFilter
     /// </summary>
     /// <param name="headerName">The name of the header to use for idempotency keys.</param>
     /// <param name="requiresKey">Whether an idempotency key is required.</param>
-    public IdempotentAttribute(string headerName = "x-Idempotency-Key", bool requiresKey = true)
+    public IdempotentAttribute(string headerName = "x-idempotency-key", bool requiresKey = true)
     {
         _headerName = headerName;
         _requiresKey = requiresKey;

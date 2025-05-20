@@ -5,8 +5,8 @@
       <!-- NuGet Package Metadata -->
     <PackageId>Idempwanna</PackageId>
     <Version>1.0.0-alpha3</Version>
-    <Authors>Your Name</Authors>
-    <Company>Your Company</Company>
+    <Authors>Paul Keating</Authors>
+    <Company>PAL-CODE</Company>
     <Product>Idempwanna</Product>
     <Description>An abstract idempotency feature for ASP.NET projects that can be used with different types of caching offerings.</Description>
     <PackageTags>idempotency;asp.net;caching;api</PackageTags>
@@ -26,8 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />    
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.8.37" />

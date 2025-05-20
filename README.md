@@ -40,7 +40,7 @@ builder.Services.AddIdempotency()
     .WithInMemoryCache(options =>
     {
         options.DefaultCacheExpiration = TimeSpan.FromHours(1);
-        options.DefaultHeaderName = "x-Idempotency-Key";
+        options.DefaultHeaderName = "x-idempotency-key";
         options.ThrowOnMissingKey = true;
     });
 

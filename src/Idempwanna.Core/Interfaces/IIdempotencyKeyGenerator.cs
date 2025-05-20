@@ -21,7 +21,7 @@ public interface IIdempotencyKeyGenerator
     /// <param name="httpRequest">The HTTP request to extract the key from</param>
     /// <param name="headerName">Optional header name to look for the key</param>
     /// <returns>The extracted idempotency key</returns>
-    Task<string> ExtractFromHttpRequestAsync(HttpRequest httpRequest, string headerName = "x-Idempotency-Key");
+    Task<string> ExtractFromHttpRequestAsync(HttpRequest httpRequest, string headerName = "x-idempotency-key");
     
     /// <summary>
     /// Gets an idempotency key from a parameter value marked with the IdempotentKeyAttribute

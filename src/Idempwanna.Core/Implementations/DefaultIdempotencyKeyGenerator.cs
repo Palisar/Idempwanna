@@ -40,7 +40,7 @@ public class DefaultIdempotencyKeyGenerator : IIdempotencyKeyGenerator
     }
 
     /// <inheritdoc />
-    public async Task<string> ExtractFromHttpRequestAsync(HttpRequest httpRequest, string headerName = "x-Idempotency-Key")
+    public async Task<string> ExtractFromHttpRequestAsync(HttpRequest httpRequest, string headerName = "x-idempotency-key")
     {
         if (httpRequest == null)
         {

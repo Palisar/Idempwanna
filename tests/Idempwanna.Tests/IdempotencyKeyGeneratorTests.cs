@@ -44,7 +44,7 @@ public class IdempotencyKeyGeneratorTests
         // Arrange
         var expectedKey = "test-key-123";
         var httpContext = new DefaultHttpContext();
-        httpContext.Request.Headers["x-Idempotency-Key"] = expectedKey;
+        httpContext.Request.Headers["x-idempotency-key"] = expectedKey;
 
         // Act
         var key = await _keyGenerator.ExtractFromHttpRequestAsync(httpContext.Request);
@@ -75,7 +75,7 @@ public class IdempotencyKeyGeneratorTests
         // Arrange
         var expectedKey = "test-key-123";
         var httpContext = new DefaultHttpContext();
-        httpContext.Request.QueryString = new QueryString($"?x-Idempotency-Key={expectedKey}");
+        httpContext.Request.QueryString = new QueryString($"?x-idempotency-key={expectedKey}");
 
         // Act
         var key = await _keyGenerator.ExtractFromHttpRequestAsync(httpContext.Request);
