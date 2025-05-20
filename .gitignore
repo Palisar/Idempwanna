@@ -31,9 +31,9 @@ artifacts/
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 
-#rider
+#other
 .idea/
-*.sln.DotSettings.user
+Idempwanna.sln.DotSettings.user
 
 # NuGet Packages
 *.nupkg
@@ -56,3 +56,4 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
