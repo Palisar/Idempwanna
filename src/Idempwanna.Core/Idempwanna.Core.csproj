@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    
-    <!-- NuGet Package Metadata -->
+    <!-- Ensure both frameworks are supported explicitly -->
+    <SupportedFrameworks>net8.0;net9.0</SupportedFrameworks>
+      <!-- NuGet Package Metadata -->
     <PackageId>Idempwanna</PackageId>
-    <Version>1.0.0-alpha1</Version>
+    <Version>1.0.0-beta2</Version>
     <Authors>Your Name</Authors>
     <Company>Your Company</Company>
     <Product>Idempwanna</Product>
@@ -26,13 +26,16 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
