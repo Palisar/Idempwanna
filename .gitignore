@@ -31,6 +31,10 @@ artifacts/
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 
+#rider
+.idea/
+*.sln.DotSettings.user
+
 # NuGet Packages
 *.nupkg
 # NuGet Symbol Packages
